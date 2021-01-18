@@ -3,7 +3,7 @@ import 'package:decorator_annotation/decorator_annotation.dart';
 import '../utils/strings.dart';
 import '../utils/wrappers.dart';
 
-part 'dummy_service.g.dart';
+part 'dummy_service.d.dart';
 
 @DecoratorClass(
   wrapper: timeWrapper,

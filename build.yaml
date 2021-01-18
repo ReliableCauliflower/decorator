@@ -1,16 +1,16 @@
 targets:
   $default:
     builders:
-      decorator_generator|decorator:
+      decorator:
+        enabled: true
         generate_for:
           - lib/*
-        enabled: true
 
 builders:
   decorator:
     import: "package:decorator/builder.dart"
-    builder_factories: ["decoratorBuilder"]
-    build_extensions: {".dart": [".decorator.g.part"]}
+    builder_factories: ["decorator"]
+    build_extensions: {".dart": [".d.dart"]}
     auto_apply: dependents
-    build_to: cache
+    build_to: source
     applies_builders: ["source_gen|combining_builder"]
