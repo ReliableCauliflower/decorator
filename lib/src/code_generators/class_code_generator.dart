@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:decorator/src/utils/type_utils.dart';
 import 'package:decorator_annotation/decorator_annotation.dart';
 import 'package:decorator/src/code_generators/method_code_generator.dart';
 import 'package:decorator/src/decorator_visitor.dart';
@@ -22,11 +23,41 @@ class ClassCodeGenerator {
     final DartObject classAnnotation =
         _classDecoratorChecker.firstAnnotationOfExact(classElement);
 
-    String methodsString = '';
     final Map<MethodElement, DartObject> decoratedMethods =
         decoratedMethodsVisitor.decoratedMethods;
+
+    final List<MethodElement> notDecoratedMethods =
+        decoratedMethodsVisitor.notDecoratedMethods;
+
+    final DartObject forAllWhereAnyObject =
+        classAnnotation.getField(forAllWhereAnyFieldName);
+
+    if (!forAllWhereAnyObject.isNull) {
+      notDecoratedMethods.removeWhere(
+        (methodElement) => !TypeUtils.validateMethodElement(
+          methodElement,
+          forAllWhereAnyObject.toSetValue().map((e) => e.toSetValue()).toSet(),
+        ),
+      );
+    }
+
+    if (decoratedMethods.isEmpty && notDecoratedMethods.isEmpty) {
+      return null;
+    }
+
+    String methodsString = '';
     for (final entry in decoratedMethods.entries) {
-      methodsString += MethodCodeGenerator.generate(entry, classAnnotation);
+      methodsString += MethodCodeGenerator.generate(
+        decoratedMethod: entry,
+        classAnnotation: classAnnotation,
+      );
+    }
+
+    for (final method in notDecoratedMethods) {
+      methodsString += MethodCodeGenerator.generate(
+        notDecoratedMethod: method,
+        classAnnotation: classAnnotation,
+      );
     }
 
     return '''

@@ -21,3 +21,12 @@ FutureOr<T> timeWrapper<T>(
 
   return result;
 }
+
+FutureOr<T> resultWrapper<T>(
+  FutureOr<T> Function() body, {
+  Map<String, dynamic> parameters,
+}) async {
+  final T result = await body?.call();
+  print('Method returned $result');
+  return result;
+}

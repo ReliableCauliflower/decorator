@@ -2,20 +2,26 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/constant/value.dart';
+import 'package:decorator/src/decorator_visitor.dart';
 import 'package:decorator_annotation/decorator_annotation.dart';
 import 'package:decorator/src/utils/type_utils.dart';
 
 class MethodCodeGenerator {
-  static String generate(
+  static String generate({
     MapEntry<MethodElement, DartObject> decoratedMethod,
+    MethodElement notDecoratedMethod,
     DartObject classAnnotation,
-  ) {
-    final MethodElement method = decoratedMethod.key;
-    final DartObject methodAnnotation = decoratedMethod.value;
+  }) {
+    final MethodElement method = decoratedMethod?.key ?? notDecoratedMethod;
+    final DartObject methodAnnotation = decoratedMethod?.value ??
+        DecoratorVisitor.decoratorChecker.firstAnnotationOfExact(method);
 
     final String methodName = method.name;
 
-    String wrapperName = _getAnnotationWrapperName(methodAnnotation);
+    String wrapperName;
+    if (methodAnnotation != null) {
+      wrapperName = _getAnnotationWrapperName(methodAnnotation);
+    }
     if (wrapperName == null) {
       wrapperName = _getAnnotationWrapperName(classAnnotation);
       if (wrapperName == null) {
@@ -34,13 +40,17 @@ class MethodCodeGenerator {
         method.getDisplayString(withNullability: false);
 
     Map<String, dynamic> parameters = {};
+
     DartObject methodParametersObject =
-        methodAnnotation.getField(parametersFieldName);
+        methodAnnotation?.getField(parametersFieldName);
+
     DartObject classParametersObject =
         classAnnotation.getField(parametersFieldName);
 
     parameters.addAll(_getParametersMapFromObject(classParametersObject));
-    parameters.addAll(_getParametersMapFromObject(methodParametersObject));
+    if (methodParametersObject != null) {
+      parameters.addAll(_getParametersMapFromObject(methodParametersObject));
+    }
 
     String parametersString = '';
     if (parameters.isNotEmpty) {
@@ -51,7 +61,8 @@ class MethodCodeGenerator {
     return '''
       @override
       $methodDisplayName $asyncString{
-          return ${isAsync ? 'await ' : ''}$wrapperName(super.$methodName$parametersString);
+          return ${isAsync ? 'await ' : ''}
+          $wrapperName(super.$methodName$parametersString);
       }
       ''';
   }

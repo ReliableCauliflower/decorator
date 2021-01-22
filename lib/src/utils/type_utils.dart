@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:analyzer/dart/constant/value.dart';
+import 'package:analyzer/dart/element/element.dart';
 
 class TypeUtils {
   static dynamic dartObjectToType(DartObject dartObject) {
@@ -33,5 +34,12 @@ class TypeUtils {
     }
     print('Unsupported parameter type: $type');
     throw JsonUnsupportedObjectError(dartObject.runtimeType);
+  }
+
+  static bool validateMethodElement(
+    MethodElement methodElement,
+    Set<Set<DartObject>> forAllWhereAny,
+  ) {
+    return true;
   }
 }
