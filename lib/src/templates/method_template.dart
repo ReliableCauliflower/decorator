@@ -4,13 +4,21 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:decorator_annotation/decorator_annotation.dart';
 import 'package:decorator/src/utils/type_utils.dart';
+import 'package:meta/meta.dart';
 
-class MethodCodeGenerator {
-  static String generate({
-    MapEntry<MethodElement, DartObject> decoratedMethod,
-    MethodElement notDecoratedMethod,
-    ClassElement classElement,
-  }) {
+class MethodTemplate {
+  final MapEntry<MethodElement, DartObject> decoratedMethod;
+  final MethodElement notDecoratedMethod;
+  final ClassElement classElement;
+
+  MethodTemplate({
+    this.decoratedMethod,
+    this.notDecoratedMethod,
+    @required this.classElement,
+  }) : assert(decoratedMethod != null || notDecoratedMethod != null);
+
+  @override
+  String toString() {
     final MethodElement method = decoratedMethod?.key ?? notDecoratedMethod;
     final DartObject methodAnnotation = decoratedMethod?.value ??
         TypeUtils.decoratorChecker.firstAnnotationOfExact(method);
@@ -74,7 +82,7 @@ class MethodCodeGenerator {
       ''';
   }
 
-  static String _getAnnotationWrapperName(DartObject annotation) {
+  String _getAnnotationWrapperName(DartObject annotation) {
     final DartObject wrapperField = annotation.getField(wrapperFieldName);
     if (wrapperField.isNull) {
       return null;
@@ -82,7 +90,7 @@ class MethodCodeGenerator {
     return wrapperField.toFunctionValue().displayName;
   }
 
-  static Map<String, dynamic> _getParametersMapFromObject(
+  Map<String, dynamic> _getParametersMapFromObject(
     DartObject parametersObject,
   ) {
     if (parametersObject.isNull) {

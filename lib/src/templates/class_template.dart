@@ -1,12 +1,18 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:decorator/src/templates/method_template.dart';
 import 'package:decorator/src/utils/type_utils.dart';
 import 'package:decorator_annotation/decorator_annotation.dart';
-import 'package:decorator/src/code_generators/method_code_generator.dart';
 import 'package:decorator/src/decorator_visitor.dart';
 import 'package:analyzer/dart/constant/value.dart';
+import 'package:meta/meta.dart';
 
-class ClassCodeGenerator {
-  static String generate(ClassElement classElement) {
+class ClassTemplate {
+  final ClassElement classElement;
+
+  ClassTemplate({@required this.classElement});
+
+  @override
+  String toString() {
     final String className = classElement.displayName;
     if (className.substring(0, 2) != '_\$' || !classElement.isAbstract) {
       return null;
@@ -45,17 +51,17 @@ class ClassCodeGenerator {
 
     String methodsString = '';
     for (final entry in decoratedMethods.entries) {
-      methodsString += MethodCodeGenerator.generate(
+      methodsString += MethodTemplate(
         decoratedMethod: entry,
         classElement: classElement,
-      );
+      ).toString();
     }
 
     for (final method in notDecoratedMethods) {
-      methodsString += MethodCodeGenerator.generate(
+      methodsString += MethodTemplate(
         notDecoratedMethod: method,
         classElement: classElement,
-      );
+      ).toString();
     }
 
     return '''
