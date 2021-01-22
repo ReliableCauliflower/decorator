@@ -2,8 +2,14 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:decorator_annotation/decorator_annotation.dart';
+import 'package:source_gen/source_gen.dart';
 
 class TypeUtils {
+  static final decoratorChecker = const TypeChecker.fromRuntime(Decorator);
+  static final decoratorClassChecker =
+      const TypeChecker.fromRuntime(DecoratorClass);
+
   static dynamic dartObjectToType(DartObject dartObject) {
     if (dartObject.isNull) {
       return null;

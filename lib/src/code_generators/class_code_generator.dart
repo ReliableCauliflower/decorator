@@ -4,7 +4,6 @@ import 'package:decorator_annotation/decorator_annotation.dart';
 import 'package:decorator/src/code_generators/method_code_generator.dart';
 import 'package:decorator/src/decorator_visitor.dart';
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:source_gen/source_gen.dart';
 
 class ClassCodeGenerator {
   static String generate(ClassElement classElement) {
@@ -17,11 +16,8 @@ class ClassCodeGenerator {
     final decoratedMethodsVisitor = DecoratorVisitor();
     classElement.visitChildren(decoratedMethodsVisitor);
 
-    final _classDecoratorChecker =
-        const TypeChecker.fromRuntime(DecoratorClass);
-
     final DartObject classAnnotation =
-        _classDecoratorChecker.firstAnnotationOfExact(classElement);
+        TypeUtils.decoratorClassChecker.firstAnnotationOfExact(classElement);
 
     final Map<MethodElement, DartObject> decoratedMethods =
         decoratedMethodsVisitor.decoratedMethods;
@@ -49,14 +45,14 @@ class ClassCodeGenerator {
     for (final entry in decoratedMethods.entries) {
       methodsString += MethodCodeGenerator.generate(
         decoratedMethod: entry,
-        classAnnotation: classAnnotation,
+        classElement: classElement,
       );
     }
 
     for (final method in notDecoratedMethods) {
       methodsString += MethodCodeGenerator.generate(
         notDecoratedMethod: method,
-        classAnnotation: classAnnotation,
+        classElement: classElement,
       );
     }
 

@@ -35,4 +35,11 @@ abstract class _$DummyService {
       () => 'Method completed',
     );
   }
+
+  static Future<String> staticRequest() async {
+    return await Future<String>.delayed(
+      const Duration(seconds: 3),
+      () => 'Method completed',
+    );
+  }
 }

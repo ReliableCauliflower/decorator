@@ -10,15 +10,17 @@ class MethodCodeGenerator {
   static String generate({
     MapEntry<MethodElement, DartObject> decoratedMethod,
     MethodElement notDecoratedMethod,
-    DartObject classAnnotation,
+    ClassElement classElement,
   }) {
     final MethodElement method = decoratedMethod?.key ?? notDecoratedMethod;
     final DartObject methodAnnotation = decoratedMethod?.value ??
-        DecoratorVisitor.decoratorChecker.firstAnnotationOfExact(method);
+        TypeUtils.decoratorChecker.firstAnnotationOfExact(method);
 
     final String methodName = method.name;
 
     String wrapperName;
+    final classAnnotation =
+        TypeUtils.decoratorClassChecker.firstAnnotationOfExact(classElement);
     if (methodAnnotation != null) {
       wrapperName = _getAnnotationWrapperName(methodAnnotation);
     }
@@ -33,9 +35,6 @@ class MethodCodeGenerator {
       }
     }
 
-    final bool isAsync = method.isAsynchronous;
-
-    final String asyncString = isAsync ? 'async ' : '';
     final String methodDisplayName =
         method.getDisplayString(withNullability: false);
 
@@ -58,11 +57,20 @@ class MethodCodeGenerator {
           ''', $parametersFieldName: ${jsonEncode(parameters)},''';
     }
 
+    final bool isAsync = method.isAsynchronous;
+    final bool isStatic = method.isStatic;
+
+    final String asyncString = isAsync ? 'async ' : '';
+    final String staticString = isStatic ? 'static' : '';
+
+    final String methodStaticString =
+        isStatic ? '${classElement.name}.' : 'super.';
+
     return '''
-      @override
-      $methodDisplayName $asyncString{
+      ${isStatic ? '' : '@override'}
+      $staticString $methodDisplayName $asyncString{
           return ${isAsync ? 'await ' : ''}
-          $wrapperName(super.$methodName$parametersString);
+          $wrapperName($methodStaticString$methodName$parametersString);
       }
       ''';
   }

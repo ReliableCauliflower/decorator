@@ -25,4 +25,11 @@ class DummyService extends _$DummyService {
       parameters: {"className": "DummyService"},
     );
   }
+
+  static Future<String> staticRequest() async {
+    return await timeWrapper(
+      _$DummyService.staticRequest,
+      parameters: {"className": "DummyService"},
+    );
+  }
 }
