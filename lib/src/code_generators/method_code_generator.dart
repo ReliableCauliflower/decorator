@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:decorator/src/decorator_visitor.dart';
 import 'package:decorator_annotation/decorator_annotation.dart';
 import 'package:decorator/src/utils/type_utils.dart';
 

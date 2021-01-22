@@ -28,14 +28,16 @@ class ClassCodeGenerator {
     final DartObject forAllWhereAnyObject =
         classAnnotation.getField(forAllWhereAnyFieldName);
 
-    if (!forAllWhereAnyObject.isNull) {
-      notDecoratedMethods.removeWhere(
-        (methodElement) => !TypeUtils.validateMethodElement(
-          methodElement,
-          forAllWhereAnyObject.toSetValue().map((e) => e.toSetValue()).toSet(),
-        ),
-      );
-    }
+    final DartObject ignoreWhereAnyObject =
+        classAnnotation.getField(ignoreWhereAnyFieldName);
+
+    notDecoratedMethods.removeWhere(
+      (methodElement) => !TypeUtils.isMethodValid(
+        methodElement,
+        forAllWhereAnyObject,
+        ignoreWhereAnyObject,
+      ),
+    );
 
     if (decoratedMethods.isEmpty && notDecoratedMethods.isEmpty) {
       return null;

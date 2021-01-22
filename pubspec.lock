@@ -181,7 +181,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "17bcc0de1b0e313db3f20cd5a7add6890487bc3e"
+      resolved-ref: "034b476d3ee8f2b135f3e0eb6e0dfbe00f467561"
       url: "https://github.com/ReliableCauliflower/decorator_annotation"
     source: git
     version: "0.0.1"
